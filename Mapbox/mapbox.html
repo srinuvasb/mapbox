@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiYmF0aHVsYXNyaW51dmFzIiwiYSI6ImNpczFlbWxucDA3bGkyeXA2c2c5OWRlNHAifQ.CrL3KY_EB-NJOXnLeNvMbg';
+
+var url = 'https://gist.githubusercontent.com/carlpoole/1bae82d89d18f29887dfa150cee58069/raw/7c3d47a317a6eb8286239ccbe556448fdd88eecc/gistfile1.txt';
+
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/bathulasrinuvas/cj2vxlz24000n2slinf72n8p6',
+    zoom: 9,
+    center: [-78.6382, 35.7796]
+});
+
+map.on('load', function() {
+
+map.addSource('tw-polygon', {
+        'type': 'geojson',
+        'data': url
+    });
+
+    map.addLayer({
+        'id': 'tw-area',
+        'type': 'fill',
+        'source': 'tw-polygon',
+        'layout': {},
+        'paint': {
+            'fill-color': '#CC0000',
+            'fill-opacity': 0
+        }
+    });
+    
+    map.addLayer({
+        'id': 'tw-borders',
+        'type': 'line',
+        'source': 'tw-polygon',
+        'layout': {},
+        'paint': {
+            'line-color': '#0F0F0F',
+            'line-opacity': 0.2
+        }
+    });
+    
+    map.addLayer({
+        "id": "tw-hover",
+        "type": "fill",
+        "source": "tw-polygon",
+        "layout": {},
+        "paint": {
+            "fill-color": "#CC0000",
+            "fill-opacity": 0.3
+        },
+        "filter": ["==", "ZCTA5CE10", ""]
+    });
+    
+    map.on("mousemove", function(e) {
+        var features = map.queryRenderedFeatures(e.point, { layers: ["tw-area"] });
+        if (features.length) {
+            map.setFilter("tw-hover", ["==", "ZCTA5CE10", features[0].properties.ZCTA5CE10]);
+        } else {
+            map.setFilter("tw-hover", ["==", "ZCTA5CE10", ""]);
+        }
+    });
+
+});
+
+</script>
+
+</body>
+</html>
